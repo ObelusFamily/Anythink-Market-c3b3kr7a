@@ -53,6 +53,15 @@ router.get("/", auth.optional, function(req, res, next) {
     query.tagList = { $in: [req.query.tag] };
   }
 
+  if (typeof req.query.title !== "undefined") {
+    // solution 1 - using mongoose built-in regex
+    query.title = { "$regex": req.query.title.toLowerCase(), "$options": "i" }; // ==> /title/i
+
+    // solution 2 - using regexp
+    // const title = new RegExp(req.query.title.toLowerCase(), 'i');
+    // query.title = title;
+  }
+
   Promise.all([
     req.query.seller ? User.findOne({ username: req.query.seller }) : null,
     req.query.favorited ? User.findOne({ username: req.query.favorited }) : null
